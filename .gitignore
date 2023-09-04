@@ -1,0 +1,4 @@
+coverage/
+coverage.lcov
+.clj-kondo/
+.lsp/
