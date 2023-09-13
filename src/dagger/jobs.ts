@@ -5,7 +5,7 @@ export enum Job {
   test = "test",
 }
 
-const exclude = [".git", ".fluentci", "target"];
+export const exclude = [".git", ".fluentci", "target"];
 
 export const uberjar = async (client: Client, src = ".") => {
   const context = client.host().directory(src);

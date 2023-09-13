@@ -47,9 +47,7 @@ You can also use this pipeline programmatically:
 
 ```ts
 import Client, { connect } from "https://sdk.fluentci.io/v0.1.4/mod.ts";
-import { Dagger } from "https://pkg.fluentci.io/clojure_pipeline/mod.ts";
-
-const { test, uberjar } = Dagger;
+import { test, uberjar } from "https://pkg.fluentci.io/clojure_pipeline@v0.3.0/mod.ts";
 
 function pipeline(src = ".") {
   connect(async (client: Client) => {
