@@ -33,7 +33,7 @@ jobs:
           dagger version
       - run:
           name: Run Dagger Pipelines
-          command: dagger run fluentci clojure_pipeline
+          command: fluentci run clojure_pipeline
     machine:
       image: ubuntu-2004:2023.07.1
 workflows:
