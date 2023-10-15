@@ -1,4 +1,4 @@
-import Client from "../../deps.ts";
+import { connect } from "../../deps.ts";
 
 export enum Job {
   uberjar = "uberjar",
@@ -7,52 +7,58 @@ export enum Job {
 
 export const exclude = [".git", ".fluentci", "target"];
 
-export const uberjar = async (client: Client, src = ".") => {
-  const context = client.host().directory(src);
-  const ctr = client
-    .pipeline(Job.uberjar)
-    .container()
-    .from("ghcr.io/fluent-ci-templates/clojure:latest")
-    .withMountedCache("/root/.m2", client.cacheVolume("maven"))
-    .withMountedCache("/app/target", client.cacheVolume("clojure-build"))
-    .withDirectory("/app", context, { exclude })
-    .withWorkdir("/app")
-    .withExec(["sh", "-c", 'eval "$(devbox global shellenv)" && lein uberjar']);
+export const uberjar = async (src = ".") => {
+  await connect(async (client) => {
+    const context = client.host().directory(src);
+    const ctr = client
+      .pipeline(Job.uberjar)
+      .container()
+      .from("ghcr.io/fluent-ci-templates/clojure:latest")
+      .withMountedCache("/root/.m2", client.cacheVolume("maven"))
+      .withMountedCache("/app/target", client.cacheVolume("clojure-build"))
+      .withDirectory("/app", context, { exclude })
+      .withWorkdir("/app")
+      .withExec([
+        "sh",
+        "-c",
+        'eval "$(devbox global shellenv)" && lein uberjar',
+      ]);
 
-  const result = await ctr.stdout();
+    const result = await ctr.stdout();
 
-  console.log(result);
+    console.log(result);
+  });
+  return "done";
 };
 
-export const test = async (client: Client, src = ".") => {
-  const context = client.host().directory(src);
-  const ctr = client
-    .pipeline(Job.test)
-    .container()
-    .from("ghcr.io/fluent-ci-templates/clojure:latest")
-    .withMountedCache("/root/.m2", client.cacheVolume("maven"))
-    .withMountedCache("/app/target", client.cacheVolume("clojure-build"))
-    .withDirectory("/app", context, { exclude })
-    .withWorkdir("/app")
-    .withExec(["sh", "-c", 'eval "$(devbox global shellenv)" && lein test']);
+export const test = async (src = ".") => {
+  await connect(async (client) => {
+    const context = client.host().directory(src);
+    const ctr = client
+      .pipeline(Job.test)
+      .container()
+      .from("ghcr.io/fluent-ci-templates/clojure:latest")
+      .withMountedCache("/root/.m2", client.cacheVolume("maven"))
+      .withMountedCache("/app/target", client.cacheVolume("clojure-build"))
+      .withDirectory("/app", context, { exclude })
+      .withWorkdir("/app")
+      .withExec(["sh", "-c", 'eval "$(devbox global shellenv)" && lein test']);
 
-  const result = await ctr.stdout();
+    const result = await ctr.stdout();
 
-  console.log(result);
+    console.log(result);
+  });
+  return "done";
 };
 
-export type JobExec = (
-  client: Client,
-  src?: string
-) =>
-  | Promise<void>
+export type JobExec = (src?: string) =>
+  | Promise<string>
   | ((
-      client: Client,
       src?: string,
       options?: {
         ignore: string[];
       }
-    ) => Promise<void>);
+    ) => Promise<string>);
 
 export const runnableJobs: Record<Job, JobExec> = {
   [Job.uberjar]: uberjar,
