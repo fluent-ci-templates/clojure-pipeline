@@ -13,7 +13,7 @@ export const uberjar = async (src = ".") => {
     const ctr = client
       .pipeline(Job.uberjar)
       .container()
-      .from("ghcr.io/fluent-ci-templates/clojure:latest")
+      .from("ghcr.io/fluentci-io/clojure:latest")
       .withMountedCache("/root/.m2", client.cacheVolume("maven"))
       .withMountedCache("/app/target", client.cacheVolume("clojure-build"))
       .withDirectory("/app", context, { exclude })
@@ -37,7 +37,7 @@ export const test = async (src = ".") => {
     const ctr = client
       .pipeline(Job.test)
       .container()
-      .from("ghcr.io/fluent-ci-templates/clojure:latest")
+      .from("ghcr.io/fluentci-io/clojure:latest")
       .withMountedCache("/root/.m2", client.cacheVolume("maven"))
       .withMountedCache("/app/target", client.cacheVolume("clojure-build"))
       .withDirectory("/app", context, { exclude })
