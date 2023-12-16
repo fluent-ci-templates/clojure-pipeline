@@ -34,6 +34,14 @@ Or simply:
 fluentci
 ```
 
+## Dagger Module
+
+Use as a [Dagger](https://dagger.io) module:
+
+```bash
+dagger mod install github.com/fluent-ci-templates/clojure-pipeline@mod
+```
+
 ## Jobs
 
 | Job     | Description         |
@@ -41,9 +49,12 @@ fluentci
 | test    | Run the tests       |
 | uberjar | Build an uberjar    |
 
-```graphql
-test(src: String!): String
-uberjar(src: String!): String
+```typescript
+uberjar(
+  src: Directory | string | undefined = "."
+): Promise<Directory | string>
+
+test(src = "."): Promise<string>
 ```
 
 ## Programmatic usage
