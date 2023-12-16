@@ -1,4 +1,6 @@
-import { connect } from "../../deps.ts";
+import { Client, Directory } from "../../sdk/client.gen.ts";
+import { connect } from "../../sdk/connect.ts";
+import { getDirectory } from "./lib.ts";
 
 export enum Job {
   uberjar = "uberjar",
@@ -7,9 +9,18 @@ export enum Job {
 
 export const exclude = [".git", ".fluentci", "target"];
 
-export const uberjar = async (src = ".") => {
-  await connect(async (client) => {
-    const context = client.host().directory(src);
+/**
+ * @function
+ * @description Builds an uberjar
+ * @param {string | Directory} src
+ * @returns {Promise<Directory | string>}
+ */
+export async function uberjar(
+  src: Directory | string | undefined = "."
+): Promise<Directory | string> {
+  let id = "";
+  await connect(async (client: Client) => {
+    const context = getDirectory(client, src);
     const ctr = client
       .pipeline(Job.uberjar)
       .container()
@@ -22,18 +33,25 @@ export const uberjar = async (src = ".") => {
         "sh",
         "-c",
         'eval "$(devbox global shellenv)" && lein uberjar',
-      ]);
+      ])
+      .withExec(["cp", "-r", "target", "/"]);
 
-    const result = await ctr.stdout();
-
-    console.log(result);
+    await ctr.stdout();
+    id = await ctr.directory("/target").id();
   });
-  return "done";
-};
+  return id;
+}
 
-export const test = async (src = ".") => {
-  await connect(async (client) => {
-    const context = client.host().directory(src);
+/**
+ * @function
+ * @description Runs tests
+ * @param {string | Directory} src
+ * @returns {string}
+ */
+export async function test(src = "."): Promise<string> {
+  let result = "";
+  await connect(async (client: Client) => {
+    const context = getDirectory(client, src);
     const ctr = client
       .pipeline(Job.test)
       .container()
@@ -44,21 +62,12 @@ export const test = async (src = ".") => {
       .withWorkdir("/app")
       .withExec(["sh", "-c", 'eval "$(devbox global shellenv)" && lein test']);
 
-    const result = await ctr.stdout();
-
-    console.log(result);
+    result = await ctr.stdout();
   });
-  return "done";
-};
+  return result;
+}
 
-export type JobExec = (src?: string) =>
-  | Promise<string>
-  | ((
-      src?: string,
-      options?: {
-        ignore: string[];
-      }
-    ) => Promise<string>);
+export type JobExec = (src?: string) => Promise<string | Directory>;
 
 export const runnableJobs: Record<Job, JobExec> = {
   [Job.uberjar]: uberjar,
