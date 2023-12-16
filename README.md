@@ -62,7 +62,7 @@ test(src: Directory | string): Promise<string>
 You can also use this pipeline programmatically :
 
 ```ts
-import { test, uberjar } from "https://pkg.fluentci.io/clojure_pipeline@v0.5.0/mod.ts";
+import { test, uberjar } from "https://pkg.fluentci.io/clojure_pipeline@v0.6.0/mod.ts";
 
 await test(src);
 await uberjar(src);
