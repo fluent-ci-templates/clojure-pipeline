@@ -51,10 +51,10 @@ dagger mod install github.com/fluent-ci-templates/clojure-pipeline@mod
 
 ```typescript
 uberjar(
-  src: Directory | string | undefined = "."
+  src: Directory | string
 ): Promise<Directory | string>
 
-test(src = "."): Promise<string>
+test(src: Directory | string): Promise<string>
 ```
 
 ## Programmatic usage

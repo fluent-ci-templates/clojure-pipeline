@@ -48,7 +48,9 @@ export async function uberjar(
  * @param {string | Directory} src
  * @returns {string}
  */
-export async function test(src = "."): Promise<string> {
+export async function test(
+  src: Directory | string | undefined = "."
+): Promise<string> {
   let result = "";
   await connect(async (client: Client) => {
     const context = getDirectory(client, src);
