@@ -25,8 +25,8 @@ pub fn setup_lein() -> Result<String, Error> {
         .pkgx()?
         .with_exec(vec!["mkdir", "-p", "$HOME/.local/bin"])?
         .with_exec(vec!["type lein >/dev/null 2>&1 || pkgx wget https://codeberg.org/leiningen/leiningen/raw/branch/stable/bin/lein"])?
+        .with_exec(vec!["type lein >/dev/null 2>&1 || chmod a+x lein"])?
         .with_exec(vec!["type lein >/dev/null 2>&1 || mv lein $HOME/.local/bin/lein"])?
-        .with_exec(vec!["type lein >/dev/null 2>&1 || chmod +x $HOME/.local/bin/lein"])?
         .stdout()?;
     Ok(stdout)
 }
@@ -36,8 +36,8 @@ pub fn setup_boot() -> Result<String, Error> {
         .pkgx()?
         .with_exec(vec!["mkdir", "-p", "$HOME/.local/bin"])?
         .with_exec(vec!["type boot >/dev/null 2>&1 || pkgx curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh"])?
+        .with_exec(vec!["type boot >/dev/null 2>&1 || chmod a+x boot"])?
         .with_exec(vec!["type boot >/dev/null 2>&1 || mv boot $HOME/.local/bin/boot"])?
-        .with_exec(vec!["type boot >/dev/null 2>&1 || chmod +x $HOME/.local/bin/boot"])?
         .stdout()?;
     Ok(stdout)
 }
@@ -73,6 +73,7 @@ pub fn setup_clojure(version: String) -> Result<String, Error> {
         .with_exec(vec!["clojure", "--version"])?
         .with_exec(vec!["lein", "--version"])?
         .with_exec(vec!["boot", "--version"])?
+        .with_exec(vec!["java", "-version"])?
         .stdout()?;
     Ok(stdout)
 }
