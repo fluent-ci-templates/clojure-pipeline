@@ -39,7 +39,7 @@ fluentci
 Use as a [Dagger](https://dagger.io) module:
 
 ```bash
-dagger mod install github.com/fluent-ci-templates/clojure-pipeline@mod
+dagger install github.com/fluent-ci-templates/clojure-pipeline@main
 ```
 
 ## Jobs

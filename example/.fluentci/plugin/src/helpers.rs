@@ -65,7 +65,7 @@ pub fn setup_clojure(version: String) -> Result<String, Error> {
             "type clojure > /dev/null 2>&1 || mise install clojure{}",
             version
         )])?
-        .with_exec(vec!["clojure", "'--version"])?
+        .with_exec(vec!["clojure", "--version"])?
         .with_exec(vec!["lein", "--version"])?
         .with_exec(vec!["boot", "--version"])?
         .stdout()?;
