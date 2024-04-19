@@ -27,14 +27,17 @@ pub fn setup_lein() -> Result<String, Error> {
         .with_exec(vec!["type lein >/dev/null 2>&1 || mv lein $HOME/.local/bin/lein"])?
         .with_exec(vec!["type lein >/dev/null 2>&1 || chmod +x $HOME/.local/bin/lein"])?
         .stdout()?;
+    Ok(stdout)
+}
 
-    let path = dag().get_env("PATH")?;
-    let home = dag().get_env("HOME")?;
-    dag().set_envs(vec![(
-        "PATH".into(),
-        format!("{}/.local/bin:{}", home, path),
-    )])?;
-
+pub fn setup_boot() -> Result<String, Error> {
+    let stdout = dag()
+        .pkgx()?
+        .with_exec(vec!["mkdir", "-p", "$HOME/.local/bin"])?
+        .with_exec(vec!["type boot >/dev/null 2>&1 || pkgx curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh"])?
+        .with_exec(vec!["type boot >/dev/null 2>&1 || mv boot $HOME/.local/bin/boot"])?
+        .with_exec(vec!["type boot >/dev/null 2>&1 || chmod +x $HOME/.local/bin/boot"])?
+        .stdout()?;
     Ok(stdout)
 }
 
@@ -45,8 +48,16 @@ pub fn setup_clojure(version: String) -> Result<String, Error> {
         format!("@{}", version)
     };
 
+    let path = dag().get_env("PATH")?;
+    let home = dag().get_env("HOME")?;
+    dag().set_envs(vec![(
+        "PATH".into(),
+        format!("{}/.local/bin:{}", home, path),
+    )])?;
+
     setup_java()?;
     setup_lein()?;
+    setup_boot()?;
 
     let stdout = dag()
         .mise()?
@@ -54,6 +65,9 @@ pub fn setup_clojure(version: String) -> Result<String, Error> {
             "type clojure > /dev/null 2>&1 || mise install clojure{}",
             version
         )])?
+        .with_exec(vec!["clojure", "'--version"])?
+        .with_exec(vec!["lein", "--version"])?
+        .with_exec(vec!["boot", "--version"])?
         .stdout()?;
     Ok(stdout)
 }
