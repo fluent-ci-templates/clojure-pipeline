@@ -23,7 +23,9 @@ pub fn setup_lein() -> Result<String, Error> {
     let stdout = dag()
         .pkgx()?
         .with_exec(vec!["mkdir", "-p", "$HOME/.local/bin"])?
-        .with_exec(vec!["type lein >/dev/null 2>&1 || pkgx curl -o $HOME/.local/bin/lein https://codeberg.org/leiningen/leiningen/raw/branch/stable/bin/lein && chmod +x $HOME/.local/bin/lein"])?
+        .with_exec(vec!["type lein >/dev/null 2>&1 || pkgx wget https://codeberg.org/leiningen/leiningen/raw/branch/stable/bin/lein"])?
+        .with_exec(vec!["type lein >/dev/null 2>&1 || mv lein $HOME/.local/bin/lein"])?
+        .with_exec(vec!["type lein >/dev/null 2>&1 || chmod +x $HOME/.local/bin/lein"])?
         .stdout()?;
 
     let path = dag().get_env("PATH")?;
