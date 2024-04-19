@@ -15,6 +15,7 @@ pub fn setup_java() -> Result<String, Error> {
             "type java >/dev/null 2>&1 || mise install java{}",
             version
         )])?
+        .with_exec(vec!["mise", "use", "-g", "java"])?
         .stdout()?;
     Ok(stdout)
 }
@@ -68,6 +69,7 @@ pub fn setup_clojure(version: String) -> Result<String, Error> {
             "type clojure > /dev/null 2>&1 || mise install clojure{}",
             version
         )])?
+        .with_exec(vec!["mise", "use", "-g", "clojure"])?
         .with_exec(vec!["clojure", "--version"])?
         .with_exec(vec!["lein", "--version"])?
         .with_exec(vec!["boot", "--version"])?
