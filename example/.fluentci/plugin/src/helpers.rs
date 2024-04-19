@@ -52,7 +52,10 @@ pub fn setup_clojure(version: String) -> Result<String, Error> {
     let home = dag().get_env("HOME")?;
     dag().set_envs(vec![(
         "PATH".into(),
-        format!("{}/.local/bin:{}", home, path),
+        format!(
+            "{}/.local/bin:{}/.local/share/mise/shims:{}",
+            home, home, path
+        ),
     )])?;
 
     setup_java()?;
