@@ -17,7 +17,7 @@ export const exclude = [".git", ".fluentci", "target"];
 export async function uberjar(
   src: Directory | string | undefined = "."
 ): Promise<Directory | string> {
-  const context = await getDirectory(dag, src);
+  const context = await getDirectory(src);
   const ctr = dag
     .pipeline(Job.uberjar)
     .container()
@@ -31,6 +31,8 @@ export async function uberjar(
 
   await ctr.stdout();
   const id = await ctr.directory("/target").id();
+  await ctr.directory("/target").export("./target");
+
   return id;
 }
 
@@ -43,7 +45,7 @@ export async function uberjar(
 export async function test(
   src: Directory | string | undefined = "."
 ): Promise<string> {
-  const context = await getDirectory(dag, src);
+  const context = await getDirectory(src);
   const ctr = dag
     .pipeline(Job.test)
     .container()
